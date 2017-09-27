@@ -1,0 +1,36 @@
+- type: PTR
+  ttl: 60
+  data:
+  - !ruby/object:Resolv::DNS::Name
+    labels:
+    - !ruby/object:Resolv::DNS::Label::Str
+      string: _http
+      downcase: _http
+    - !ruby/object:Resolv::DNS::Label::Str
+      string: _tcp
+      downcase: _tcp
+    - !ruby/object:Resolv::DNS::Label::Str
+      string: example
+      downcase: example
+    - !ruby/object:Resolv::DNS::Label::Str
+      string: com
+      downcase: com
+    absolute: true
+- type: PTR
+  ttl: 60
+  data:
+  - !ruby/object:Resolv::DNS::Name
+    labels:
+    - !ruby/object:Resolv::DNS::Label::Str
+      string: _xmpp
+      downcase: _xmpp
+    - !ruby/object:Resolv::DNS::Label::Str
+      string: _tcp
+      downcase: _tcp
+    - !ruby/object:Resolv::DNS::Label::Str
+      string: example
+      downcase: example
+    - !ruby/object:Resolv::DNS::Label::Str
+      string: com
+      downcase: com
+    absolute: true

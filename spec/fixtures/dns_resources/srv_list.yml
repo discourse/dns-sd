@@ -1,0 +1,49 @@
+- type: SRV
+  ttl: 60
+  data:
+  - 0
+  - 0
+  - 8000
+  - p0w0.example.com
+- type: SRV
+  ttl: 60
+  data:
+  - 0
+  - 10
+  - 8010
+  - p0w10.example.com
+- type: SRV
+  ttl: 60
+  data:
+  - 1
+  - 0
+  - 8100
+  - p1w0.example.com
+- type: SRV
+  ttl: 60
+  data:
+  - 2
+  - 0
+  - 8200
+  - p2w0a.example.com
+- type: SRV
+  ttl: 60
+  data:
+  - 2
+  - 0
+  - 8200
+  - p2w0b.example.com
+- type: SRV
+  ttl: 60
+  data:
+  - 2
+  - 10
+  - 8210
+  - p2w10.example.com
+- type: SRV
+  ttl: 60
+  data:
+  - 2
+  - 20
+  - 8220
+  - p2w20.example.com

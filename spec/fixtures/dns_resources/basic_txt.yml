@@ -1,0 +1,8 @@
+- type: TXT
+  ttl: 60
+  data:
+  - "txtvers=1"
+  - "something=\"funny\""
+  - "foo=bar"
+  - "baz="
+  - "wombat"
