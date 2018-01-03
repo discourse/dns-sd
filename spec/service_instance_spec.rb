@@ -43,38 +43,96 @@ describe DNSSD::ServiceInstance do
   end
 
   describe "#data" do
-    before(:each) do
-      allow(mock_resolver).to receive(:getresources).with(any_args).and_return(dns_resource_fixture("basic_txt"))
+    context "with data" do
+      before(:each) do
+        allow(mock_resolver).to receive(:getresources).with(any_args).and_return(dns_resource_fixture("basic_txt"))
+      end
+
+      it "returns the tags as a hash" do
+        expect(instance.data).to eq(txtvers: "1", something: "\"funny\"", foo: "bar", baz: "", wombat: nil)
+      end
+
+      it "retrieves the TXT record from DNS" do
+        expect(mock_resolver).to receive(:getresources)
+          .with(
+            Resolv::DNS::Name.new(["\u00c4rgle B\u00e4rgle", "_http", "_tcp", "example", "com"]),
+            Resolv::DNS::Resource::IN::TXT
+        )
+
+        instance.data
+      end
+
+      it "caches responses" do
+        expect(mock_resolver).to receive(:getresources).once
+
+        instance.data
+        instance.data
+      end
+
+      it "respects the TTL" do
+        expect(mock_resolver).to receive(:getresources).twice
+        expect(Time).to receive(:now).and_return(Time.at(t0 = 1234567890))
+        expect(Time).to receive(:now).at_least(:once).and_return(Time.at(t0 + 120))
+
+        instance.data
+        instance.data
+      end
     end
 
-    it "returns the tags as a hash" do
-      expect(instance.data).to eq(txtvers: "1", something: "\"funny\"", foo: "bar", baz: "", wombat: nil)
+    context "with empty TXT record" do
+      before(:each) do
+        allow(mock_resolver).to receive(:getresources).with(any_args).and_return(dns_resource_fixture("empty_txt"))
+      end
+
+      it "returns an empty hash" do
+        expect(instance.data).to eq({})
+      end
+
+      it "retrieves the TXT record from DNS" do
+        expect(mock_resolver).to receive(:getresources)
+          .with(
+            Resolv::DNS::Name.new(["\u00c4rgle B\u00e4rgle", "_http", "_tcp", "example", "com"]),
+            Resolv::DNS::Resource::IN::TXT
+        )
+
+        instance.data
+      end
+
+      it "caches responses" do
+        expect(mock_resolver).to receive(:getresources).once
+
+        instance.data
+        instance.data
+      end
+
+      it "respects the TTL" do
+        expect(mock_resolver).to receive(:getresources).twice
+        expect(Time).to receive(:now).and_return(Time.at(t0 = 1234567890))
+        expect(Time).to receive(:now).at_least(:once).and_return(Time.at(t0 + 120))
+
+        instance.data
+        instance.data
+      end
     end
 
-    it "retrieves the TXT record from DNS" do
-      expect(mock_resolver).to receive(:getresources)
-        .with(
-          Resolv::DNS::Name.new(["\u00c4rgle B\u00e4rgle", "_http", "_tcp", "example", "com"]),
-          Resolv::DNS::Resource::IN::TXT
-      )
+    context "with no TXT record" do
+      before(:each) do
+        allow(mock_resolver).to receive(:getresources).with(any_args).and_return([])
+      end
 
-      instance.data
-    end
+      it "returns an empty hash" do
+        expect(instance.data).to eq({})
+      end
 
-    it "caches responses" do
-      expect(mock_resolver).to receive(:getresources).once
+      it "asks DNS for the TXT record" do
+        expect(mock_resolver).to receive(:getresources)
+          .with(
+            Resolv::DNS::Name.new(["\u00c4rgle B\u00e4rgle", "_http", "_tcp", "example", "com"]),
+            Resolv::DNS::Resource::IN::TXT
+        )
 
-      instance.data
-      instance.data
-    end
-
-    it "respects the TTL" do
-      expect(mock_resolver).to receive(:getresources).twice
-      expect(Time).to receive(:now).and_return(Time.at(t0 = 1234567890))
-      expect(Time).to receive(:now).at_least(:once).and_return(Time.at(t0 + 120))
-
-      instance.data
-      instance.data
+        instance.data
+      end
     end
   end
 

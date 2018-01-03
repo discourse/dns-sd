@@ -29,7 +29,11 @@ class DNSSD
         @rrcache[k][:records].dup
       else
         Resolv::DNS.new.getresources(fqdn, type).tap do |rrs|
-          @rrcache[k] = { records: rrs.dup, expiry: Time.now + rrs.map { |rr| rr.ttl }.min }
+          if rrs.empty?
+            @rrcache.delete(k)
+          else
+            @rrcache[k] = { records: rrs.dup, expiry: Time.now + rrs.map { |rr| rr.ttl }.min }
+          end
         end
       end
     end

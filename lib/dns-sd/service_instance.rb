@@ -69,8 +69,9 @@ class DNSSD
       {}.tap do |data|
         cached_resources(@fqdn, Resolv::DNS::Resource::IN::TXT).each do |rr|
           rr.strings.each do |s|
-            s =~ /\A([^=]+)(=(.*))?$/
-            data[$1.to_sym] = $3
+            if s =~ /\A([^=]+)(=(.*))?$/
+              data[$1.to_sym] = $3
+            end
           end
         end
       end

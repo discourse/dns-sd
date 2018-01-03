@@ -1,0 +1,4 @@
+- type: TXT
+  ttl: 60
+  data:
+  - ""
