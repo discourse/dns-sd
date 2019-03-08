@@ -94,7 +94,15 @@ class DNSSD
     # server list is respected.
     #
     # @return [Array<DNSSD::Target>]
-    def targets
+    def targets(deterministic: false)
+      if deterministic
+        return cached_resources(@fqdn, Resolv::DNS::Resource::IN::SRV).sort_by do |rr|
+          [rr.priority, 65535 - rr.weight, rr.target.to_s]
+        end.map do |rr|
+          DNSSD::Target.new(rr.target.to_s, rr.port)
+        end
+      end
+
       [].tap do |list|
         left = cached_resources(@fqdn, Resolv::DNS::Resource::IN::SRV)
 

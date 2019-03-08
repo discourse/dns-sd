@@ -184,5 +184,18 @@ describe DNSSD::ServiceInstance do
         DNSSD::Target.new("p2w0b.example.com", 8200)
       ])
     end
+
+    it "can return targets in a fixed order" do
+      expect(instance).to receive(:rand).never
+      expect(instance.targets(deterministic: true)).to eq([
+        DNSSD::Target.new("p0w10.example.com", 8010),
+        DNSSD::Target.new("p0w0.example.com",  8000),
+        DNSSD::Target.new("p1w0.example.com",  8100),
+        DNSSD::Target.new("p2w20.example.com", 8220),
+        DNSSD::Target.new("p2w10.example.com", 8210),
+        DNSSD::Target.new("p2w0a.example.com", 8200),
+        DNSSD::Target.new("p2w0b.example.com", 8200)
+      ])
+    end
   end
 end
