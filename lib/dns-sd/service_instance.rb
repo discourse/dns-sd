@@ -3,6 +3,7 @@ require 'dns-sd/service'
 require 'dns-sd/target'
 
 require 'resolv'
+require 'digest/md5'
 
 class DNSSD
   # A single instance of a service.
@@ -93,18 +94,29 @@ class DNSSD
     # but also because it'll ensure that the weight-based randomisation of the
     # server list is respected.
     #
+    # @param deterministic [String] (Optional) If provided, use the given string
+    #   to create a seed to use when shuffling the records so that each time this
+    #   method is called, the same set of records will be shuffled into the same
+    #   order. By default, each time this method is called, records are (probably)
+    #   returned in a different order.
+    #
     # @return [Array<DNSSD::Target>]
-    def targets(deterministic: false)
-      if deterministic
-        return cached_resources(@fqdn, Resolv::DNS::Resource::IN::SRV).sort_by do |rr|
-          [rr.priority, 65535 - rr.weight, rr.target.to_s]
-        end.map do |rr|
-          DNSSD::Target.new(rr.target.to_s, rr.port)
-        end
-      end
-
+    def targets(deterministic: nil)
       [].tap do |list|
         left = cached_resources(@fqdn, Resolv::DNS::Resource::IN::SRV)
+
+        seed = if deterministic
+          left = left.sort_by { |rr| [rr.target.to_s, rr.port] }
+
+          Digest::MD5.hexdigest(
+            deterministic.to_s +
+            left.map { |rr| [rr.target.to_s, rr.port, rr.priority, rr.weight] }.inspect
+          ).hex
+        else
+          Random.new_seed
+        end
+
+        prng = Random.new(seed)
 
         # Happily, this algorithm, whilst a bit involved, maps quite directly
         # to the description from RFC2782, page 4, of which parts are quoted as
@@ -143,7 +155,7 @@ class DNSSD
             # > associate the running sum in the selected order. Then choose a
             # > uniform random number between 0 and the sum computed
             # > (inclusive)
-            selector = rand(candidates.inject(1) { |n, rr| n + rr.weight })
+            selector = prng.rand(candidates.inject(1) { |n, rr| n + rr.weight })
 
             # > select the RR whose running sum value is the first in the
             # > selected order which is greater than or equal to the random
