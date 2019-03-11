@@ -151,27 +151,30 @@ describe DNSSD::ServiceInstance do
       # - p2w10
       # - p2w20
 
+      mock_rand = instance_double(Random)
+      expect(Random).to receive(:new).and_return(mock_rand)
+
       # Phase 1: choosing between p0w0 and p0w10.
 
       # This should select p0w10.
-      expect(instance).to receive(:rand).with(11).and_return(4).ordered
+      expect(mock_rand).to receive(:rand).with(11).and_return(4).ordered
       # p0w0 now gets chosen as the only remaining target at this priority.
-      expect(instance).to receive(:rand).with(1).and_return(0).ordered
+      expect(mock_rand).to receive(:rand).with(1).and_return(0).ordered
 
       # Phase 2: choosing between p1w0 and... p1w0.  That's easy.
-      expect(instance).to receive(:rand).with(1).and_return(0).ordered
+      expect(mock_rand).to receive(:rand).with(1).and_return(0).ordered
 
       # Phase 3: choosing between p2w0a, p2w0b, p2w10, and p2w20.
 
       # This should (just barely) select p2w10.
-      expect(instance).to receive(:rand).with(31).and_return(10).ordered
+      expect(mock_rand).to receive(:rand).with(31).and_return(10).ordered
       # This should select p2w0a.
-      expect(instance).to receive(:rand).with(21).and_return(0).ordered
+      expect(mock_rand).to receive(:rand).with(21).and_return(0).ordered
       # This should select p2w20
-      expect(instance).to receive(:rand).with(21).and_return(17).ordered
+      expect(mock_rand).to receive(:rand).with(21).and_return(17).ordered
       # p2w0b should be chosen as the only remaining target at
       # this priority.
-      expect(instance).to receive(:rand).with(1).and_return(0).ordered
+      expect(mock_rand).to receive(:rand).with(1).and_return(0).ordered
 
       # Now, after all that, did it *work*?
       expect(instance.targets).to eq([
@@ -186,13 +189,12 @@ describe DNSSD::ServiceInstance do
     end
 
     it "can return targets in a fixed order" do
-      expect(instance).to receive(:rand).never
-      expect(instance.targets(deterministic: true)).to eq([
+      expect(instance.targets(deterministic: 'server4')).to eq([
         DNSSD::Target.new("p0w10.example.com", 8010),
         DNSSD::Target.new("p0w0.example.com",  8000),
         DNSSD::Target.new("p1w0.example.com",  8100),
-        DNSSD::Target.new("p2w20.example.com", 8220),
         DNSSD::Target.new("p2w10.example.com", 8210),
+        DNSSD::Target.new("p2w20.example.com", 8220),
         DNSSD::Target.new("p2w0a.example.com", 8200),
         DNSSD::Target.new("p2w0b.example.com", 8200)
       ])
