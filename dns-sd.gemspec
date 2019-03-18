@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'github-release'
-  s.add_development_dependency 'git-version-bump'
+  s.add_development_dependency 'git-version-bump', '~> 0.16'
   s.add_development_dependency 'guard-rspec'
   s.add_development_dependency 'guard-rubocop'
   s.add_development_dependency 'rake', "~> 12.0"
