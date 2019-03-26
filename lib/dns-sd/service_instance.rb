@@ -101,7 +101,8 @@ class DNSSD
     #   returned in a different order.
     #
     # @return [Array<DNSSD::Target>]
-    def targets(deterministic: nil)
+    def targets(opts = {})
+      deterministic = opts[:deterministic]
       [].tap do |list|
         left = cached_resources(@fqdn, Resolv::DNS::Resource::IN::SRV)
 
