@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
 
   s.summary  = "Query RFC6763 DNS-SD records"
-  s.description = <<~EOF
+  s.description = <<-EOF
     If you need to retrieve and work with DNS-SD records, this is the library
     you've been waiting for.
   EOF
@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
 
   s.files = `git ls-files -z`.split("\0").reject { |f| f =~ /^(G|spec|Rakefile)/ }
 
-  s.required_ruby_version = ">= 2.3.0"
+  s.required_ruby_version = ">= 1.9.1"
 
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'github-release'
