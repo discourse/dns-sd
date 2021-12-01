@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
 
   s.files = `git ls-files -z`.split("\0").reject { |f| f =~ /^(G|spec|Rakefile)/ }
 
-  s.required_ruby_version = ">= 1.9.1"
+  s.required_ruby_version = ">= 2.5"
 
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'github-release'
